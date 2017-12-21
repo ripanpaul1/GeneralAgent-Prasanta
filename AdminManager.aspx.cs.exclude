@@ -1,0 +1,291 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using Gold;
+using System.Web.Security;
+using System.Web.UI.WebControls.WebParts;
+
+public partial class admin_AdminManager : System.Web.UI.Page
+{
+    AdminUser objadmin = new AdminUser();
+    //UserMaster objUser = new UserMaster();
+    ImageButton ibtnDel = new ImageButton();
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (Session["LogedUser"] == null)
+        {
+            Response.Redirect("Default.aspx");
+        }
+        if (Session["IsSuperAdmin"].ToString() != "True")
+        {
+            string rawUrl1 = HttpContext.Current.Request.Url.AbsoluteUri.Substring(0, HttpContext.Current.Request.Url.AbsoluteUri.LastIndexOf('/'));
+            string strcript = "<script>alert('You Are Not Authorized To This Page'); window.location.href='" + rawUrl1 + "/Home.aspx';</script>";
+            if (!ClientScript.IsClientScriptBlockRegistered("clientscript"))
+            {
+                ClientScript.RegisterStartupScript(this.GetType(), "clientscript", strcript);
+            }
+            // Response.Redirect("Home.aspx");
+
+        }
+        if (!IsPostBack)
+        {
+
+          
+            txtPassword.Attributes.Add("value", txtPassword.Text);
+
+        }
+
+    }
+    protected void ChangeView(object sender, EventArgs e)
+    {
+       
+        MultiView1.ActiveViewIndex = Convert.ToInt32(((LinkButton)sender).CommandArgument);
+        if (MultiView1.ActiveViewIndex == 1)
+        {
+            ResetAll();
+            gvUser.DataBind();
+        }
+        if (MultiView1.ActiveViewIndex == 0)
+        {
+            ResetAll();
+            Session["mode"] = "ADD";
+            txtPassword.Attributes.Add("value", txtPassword.Text);
+            //if (Session["LogedUser"] != null)
+            //{
+            //    long UserID = long.Parse(Session["UserId"].ToString());
+            //}
+            lblMsg.Text = "Adding admin user";
+        }
+ 
+    }
+
+    private void ResetAll()
+    {
+        txtName.Text = string.Empty;
+        txtPassword.Text = string.Empty;
+        txtPhoneNo.Text = string.Empty;
+        txtEmail.Text = string.Empty;
+        chkActive.Checked = false;
+        chkIsSuperUser.Checked = false;
+        TxtUname.Text = "";
+        cdState.SelectedValue = "0";
+        cdCountry.SelectedValue="0";
+        txtLname.Text = "";
+        txtAdress.Text = "";
+        txtZip.Text = "";
+        
+
+
+    }
+    protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        gvUser.PageSize = int.Parse(ddlPageSize.SelectedValue);
+        gvUser.DataBind();
+    }
+    protected void BtnCancel_Click(object sender, EventArgs e)
+    {
+        ResetAll();
+        MultiView1.ActiveViewIndex = 1;
+    }
+    protected void BtnSave_Click(object sender, EventArgs e)
+    {
+        string strMode = Session["mode"].ToString();
+        string strMgs = "";
+        
+        if (strMode == "ADD")
+        {
+            //bool status = checkEmail();
+            //if (status == true)
+            //{
+            //    ScriptManager.RegisterClientScriptBlock(this.Page, this.GetType(), "ff", "alert('Use Another User Name.');", true);
+            //    return;
+            //}
+            //ResetAll();
+            strMgs = "User Information Saved";
+            objadmin.AddNew();//admin
+            //objUser.AddNew();//user
+            objadmin.Password = txtPassword.Text;//admin
+            //objUser.Password = txtPassword.Text;//user
+            lblMsg.Text = "";
+
+        }
+        if (strMode == "EDIT" && Session["UserID"] != null)
+        {
+            objadmin.LoadByPrimaryKey(long.Parse(Session["UserId"].ToString()));//admin
+            
+            //objUser.Where.UserName.Value = objadmin.UserName;//user
+            //objUser.Where.UserName.Operator = VTPLfx.WhereParameter.Operand.Equal;
+            //objUser.Query.Load();
+
+            if (txtPassword.Text != "")
+            {
+                objadmin.Password = txtPassword.Text;//admin
+                //objUser.Password = txtPassword.Text;//user
+            }
+            strMgs = "User Details Modified";
+            MultiView1.ActiveViewIndex = 1;
+
+        }
+        objadmin.UserName = TxtUname.Text;//admin
+        //objUser.UserName = TxtUname.Text;//user
+
+        objadmin.FName = txtName.Text;//admin
+        //objUser.FName = txtName.Text;//user
+
+        objadmin.LName = txtLname.Text;//admin
+        //objUser.LName = txtLname.Text;//user
+
+        objadmin.Address = txtAdress.Text;//admin
+        //objUser.Address = txtAdress.Text;//user
+
+        objadmin.Country = long.Parse(ddlCountry.SelectedValue.ToString());//admin
+        //objUser.Country = long.Parse(ddlCountry.SelectedValue.ToString());//user
+
+        objadmin.State = long.Parse(ddlState.SelectedValue.ToString());//admin
+        //objUser.State = long.Parse(ddlState.SelectedValue.ToString());//user
+
+        objadmin.Pin = txtZip.Text;//admin
+        //objUser.Postcode = txtZip.Text;//user
+
+        objadmin.Email = txtEmail.Text;//admin
+        //objUser.Email = txtEmail.Text;//user
+
+        objadmin.Mobile = txtPhoneNo.Text;//admin
+        //objUser.ContactNumber = txtPhoneNo.Text;//user
+
+        objadmin.IsActive = chkActive.Checked;//admin
+        //objUser.IsActive = chkActive.Checked;//user
+        
+        
+        /*super admin/shop admin rdblist*/
+        if (rdblist.SelectedValue == "0")
+        {
+            objadmin.IsSuperAdminUser = true;//admin
+            //objUser.UserType = "A";//user
+        }
+        else
+        {
+            objadmin.IsSuperAdminUser = false;//admin
+            //objUser.UserType = "SA";//user
+        }
+        /*-------------------------------------*/
+        objadmin.LastUpdate = DateTime.Now;//admin
+        //objUser.LastLoginTime = DateTime.Now;//user
+
+        objadmin.LastAccessedIP = Request.ServerVariables["REMOTE_ADDR"].ToString();//admin
+        //objUser.LastLoginIP = Request.ServerVariables["REMOTE_ADDR"].ToString();//user
+
+        //objUser.IsApprovedByAdmin = true;
+        //objUser.EntryDate = DateTime.Now;
+
+        objadmin.Save();//admin
+        //objUser.Save();//user
+        ScriptManager.RegisterClientScriptBlock(this.Page, this.GetType(), "ff", "alert('Informations are submitted successfully');", true);
+
+        lblMsg.Text = strMgs;
+        ResetAll();
+        objadmin.FlushData();
+        //objUser.FlushData();
+        gvUser.DataBind();
+    }
+
+    //public bool checkEmail()
+    //{
+    //    UserMaster objuser = new UserMaster();
+    //    objuser.Where.UserName.Value = TxtUname.Text.Trim();
+    //    objuser.Where.UserName.Operator = VTPLfx.WhereParameter.Operand.Equal;
+    //    objuser.Query.Load();
+
+    //    if (objuser.RowCount >= 1)
+    //        return true;
+    //    else
+    //        return false;
+
+    //}
+    protected void ibtnDetails_Click(object sender, ImageClickEventArgs e)
+    {
+        long Id = Convert.ToInt64(((ImageButton)sender).CommandArgument);
+        AdminUser objadminuser = new AdminUser();
+        objadminuser.LoadByPrimaryKey(Id);
+        Session["UserID"] = Id;
+        ResetAll();
+        TxtUname.Text = objadminuser.UserName;
+        txtPassword.Text = objadminuser.Password;
+        txtName.Text = objadminuser.FName;
+        txtLname.Text = objadminuser.LName;
+        txtAdress.Text = objadminuser.Address;
+        txtZip.Text = objadminuser.Pin;
+       // ddlCountry.SelectedValue = objadminuser.Country.ToString();
+        //ddlState.SelectedValue = objadminuser.State.ToString();
+        cdCountry.SelectedValue = objadminuser.Country.ToString();
+        cdState.SelectedValue = objadminuser.State.ToString();
+        txtEmail.Text = objadminuser.Email;
+        txtPhoneNo.Text = objadminuser.Mobile;
+        chkActive.Checked = objadminuser.IsActive;
+        /*super admin/shop admin rdblist*/
+        if (objadminuser.IsSuperAdminUser==true)
+        {
+            rdblist.SelectedValue = "0";
+        }
+        else{
+            rdblist.SelectedValue = "1";
+        }
+          /*-----------------*/    
+        //txtPassword.TextMode = TextBoxMode.Password;
+        MultiView1.ActiveViewIndex = 0;
+        Session["mode"] = "EDIT";
+
+        //Chenging TextBox according to mode
+        
+
+        lblMsg.Text = "Modifying User Details";
+    }
+    protected void ibtnDelete_Click(object sender, ImageClickEventArgs e)
+    {
+        long lId = long.Parse(((ImageButton)sender).CommandArgument);
+        objadmin.LoadByPrimaryKey(lId);
+        objadmin.MarkAsDeleted();
+        objadmin.Save();
+        gvUser.DataBind();
+    }
+    protected void ChangeStatus(object sender, ImageClickEventArgs e)
+    {
+        string Status = Convert.ToString(((ImageButton)sender).CommandArgument);
+
+        long Id = long.Parse(((ImageButton)sender).CommandName);
+        objadmin.LoadByPrimaryKey(Id);
+        if (Status == "True")
+        {
+            objadmin.IsActive = false;
+            objadmin.Save();
+        }
+        else
+        {
+            objadmin.IsActive = true;
+
+            objadmin.Save();
+        }
+        gvUser.DataBind();
+    }
+    protected void gvUser_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+
+    }
+    protected void gvUser_RowCreated(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType == DataControlRowType.DataRow)//.Footer)&&(e.Row.RowType != DataControlRowType.EmptyDataRow))
+            if (Session["IsSuperAdmin"].ToString() != "True")
+            {
+
+                //ibtnED = (ImageButton)e.Row.FindControl("ibtnEdit");
+                //ibtnED.Enabled = false;
+                ibtnDel = (ImageButton)e.Row.FindControl("ibtnDelete");
+                ibtnDel.Enabled = false;
+                //ibtactv = (ImageButton)e.Row.FindControl("ibtnActive");
+                //ibtactv.Enabled = false;
+            }
+    }
+}

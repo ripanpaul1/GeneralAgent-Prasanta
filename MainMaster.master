@@ -1,0 +1,117 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MainMaster.master.cs" Inherits="MainMaster" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,700' rel='stylesheet' type='text/css' />
+
+    <link rel="stylesheet" href="css/reset.css" />
+    <!-- CSS reset -->
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- Resource style -->
+    <script src="js/modernizr.js"></script>
+    <!-- Modernizr -->
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+
+            <header class="cd-main-header">
+                <a href="#0" class="cd-logo">
+                   <%-- <img src="img/logo.jpg" alt="Logo" width="120" height="30"/>--%>
+
+                <img src="img/smart-logo.png" alt="Logo" width="100" height="55" />
+               <%-- <img src="img/north-east-logo.png" alt="Logo" width="140" height="55" />--%></a>
+              
+                <a href="#0" class="cd-nav-trigger" style="text-align: right;">Menu<span></span></a>
+
+                <nav class="cd-nav">
+                    <ul class="cd-top-nav">
+
+                        <li class="has-children account">
+                            <a href="#0">
+                                <img src="img/cd-avatar.png" alt="avatar">
+                                Account
+					</a>
+
+                            <ul>
+
+                                <li><a href="#0">My Account</a></li>
+                                <li><a href="#0">Edit Account</a></li>
+                                <asp:LinkButton ID="btnLogout" runat="server"  OnClick="lnkBtnLogout_Click">Logout</asp:LinkButton>
+                             <%--   <li><a href="#0">Logout</a></li>--%>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
+            <!-- .cd-main-header -->
+
+            <main class="cd-main-content">
+                <nav class="cd-side-nav">
+                    <ul>
+                        <li class="cd-label">Main</li>
+                        <li class="has-children overview">
+                            <a href="#0">Quoting</a>
+
+                            <ul>
+                                <li><a href="CreateQuote.aspx">Create Quote</a></li>
+                                <li><a href="QuoteHome.aspx">My Quotes</a></li>
+                                <li><a href="QuoteHome.aspx">All Quotes</a></li>
+                                <li><a href="#">Release Notes</a></li>
+                                <li><a href="#">Premium Modification Tutorial</a></li>
+                                <li><a href="#">Garage Downloads</a></li>
+                            </ul>
+                        </li>
+                        
+                        <li class="has-children bookmarks">
+                            <a href="#0">EUM</a>
+
+                        </li>
+
+                        <li class="has-children comments">
+                            <a href="#0">Reports</a>
+
+                        </li>
+                        <li class="has-children images">
+                            <a href="#0">Information</a>
+
+                        </li>
+
+                        <li class="has-children users">
+                            <a href="#0">Admin</a>
+                             <ul>
+                                <li><a href="UserManager.aspx">User Management</a></li>
+                                
+                            </ul>
+                        </li>
+                        
+                    </ul>
+
+
+
+                </nav>
+
+                <div class="content-wrapper">
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                    </asp:ContentPlaceHolder>
+                </div>
+                <!-- .content-wrapper -->
+            </main>
+            <!-- .cd-main-content -->
+            <script src="js/jquery-2.1.4.js"></script>
+            <script src="js/jquery.menu-aim.js"></script>
+            <script src="js/main.js"></script>
+            <!-- Resource jQuery -->
+
+            <script src="js/index.js"></script>
+
+        </div>
+    </form>
+</body>
+</html>
